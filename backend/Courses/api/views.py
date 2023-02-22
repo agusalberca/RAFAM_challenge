@@ -102,6 +102,7 @@ class FriendshipViewSet(viewsets.ViewSet):
     def list(self, request):
         '''Returns a list of all friendships
         Format: list of lists of two users'''
+        print(request.headers)
         friendships = []
         friend_set = set()
         users = Custom_user.objects.all()
