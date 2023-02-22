@@ -1,4 +1,4 @@
-##Intro
+## Intro
 This repository contains two challenges used to test basic fullstack development capabilities and skills.
 Inside each directory there is a specific README.md file that indicates how to run each stack of technologies.
 ### Backend
