@@ -1,13 +1,12 @@
 from .models import Course, Lesson, Custom_user
 from . import serializers
-from rest_framework import viewsets, permissions, generics, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 class Custom_userViewSet(viewsets.ModelViewSet):
     queryset = Custom_user.objects.all()
     serializer_class = serializers.UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         '''Creates a new user'''
@@ -30,10 +29,13 @@ class Custom_userViewSet(viewsets.ModelViewSet):
                 return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        if friend in user.friends.all():
+            return Response({'error': 'User already added.'}, status=status.HTTP_400_BAD_REQUEST)  
         user.friends.add(friend)
         user.save()
         serializer = self.serializer_class(user)
-        return Response(serializer.data)        
+        return Response(serializer.data)
     
     @action(detail=True, methods=['get'])
     def friends(self, request, pk=None):
@@ -54,7 +56,6 @@ class Custom_userViewSet(viewsets.ModelViewSet):
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = serializers.CourseSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         '''Creates a new course'''
@@ -68,7 +69,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = serializers.LessonSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         '''Creates a new lesson'''
@@ -91,6 +91,8 @@ class LessonViewSet(viewsets.ModelViewSet):
                 return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if user in lesson.taken_by.all():
+            return Response({'error': 'User already added.'}, status=status.HTTP_400_BAD_REQUEST)
         lesson.taken_by.add(user)
         lesson.save()
         serializer = self.serializer_class(lesson)
